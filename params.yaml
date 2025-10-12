@@ -4,4 +4,4 @@
 # (ISO 23894 §6.5): reentrenamiento del cribador con clase balanceada + umbral de decisión 0.30,
 # que recupera la sensibilidad DR (recall) por encima del bar clínico 0.80.
 seed: 42
-mitigate: false
+mitigate: true
