@@ -1,0 +1,7 @@
+# Hiperparámetros del pipeline reproducible REAL (DVC-native). El motor los ancla en `dvc.lock`.
+# `seed` FIJO (determinismo del split train/test + LogReg, Art.15). El arco rojo→verde lo
+# gobierna `mitigate`: demo-repos.ts lo bumpea false→true como TRATAMIENTO versionado en git
+# (ISO 23894 §6.5): reentrenamiento del cribador con clase balanceada + umbral de decisión 0.30,
+# que recupera la sensibilidad DR (recall) por encima del bar clínico 0.80.
+seed: 42
+mitigate: false

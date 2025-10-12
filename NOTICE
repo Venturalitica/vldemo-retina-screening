@@ -1,0 +1,18 @@
+This directory references the ODIR-5K (Ocular Disease Intelligent Recognition)
+dataset for the venth `retina-screening` demo example.
+
+Source:  https://www.kaggle.com/datasets/andrewmvd/ocular-disease-recognition-odir5k
+License: CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/)
+Cite:    ODIR-5K: Ocular Disease Intelligent Recognition. Kaggle,
+         andrewmvd/ocular-disease-recognition-odir5k.
+
+What is bundled here:
+  data/full_df.csv          per-patient labels & metadata (~1.5 MB), redistributed
+                            unmodified. The columns `dr_referable` (from `D`),
+                            `patient_sex` and `patient_age` are derived for the
+                            fairness/sensitivity evaluation; see
+                            data/odir.croissant.json for the field-level provenance.
+
+What is NOT bundled (size, not licence — ~2 GB):
+  the fundus images. The pipeline reads them from `$SEI_ODIR_CACHE/preprocessed_images/`
+  at build time. Re-runners fetch the CC BY 4.0 images from the Kaggle source above.
