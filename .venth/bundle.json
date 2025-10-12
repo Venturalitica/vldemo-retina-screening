@@ -31,7 +31,7 @@
     "organization": "RetinaCare Demo"
   },
   "triple": {
-    "code": "7b79ef7dd51478d613a243c517a505bcf7ae4517",
+    "code": "21e36a797025922eacf838e04d69593eac5fca5b",
     "model": "resnet18-logreg:seed=42",
     "dataset": ""
   },
@@ -92,12 +92,12 @@
     {
       "control_id": "model-dr-sensitivity",
       "metric_key": "recall_score",
-      "actual_value": 0.4164705882352941,
+      "actual_value": 0.8847058823529412,
       "threshold": 0.8,
       "operator": "gt",
       "severity": "critical",
       "enforcement_mode": "block",
-      "passed": false,
+      "passed": true,
       "eval_passed": null,
       "lifecycle_phase": "validation",
       "risk_id": "risk.dr-underdiagnosis",
@@ -108,8 +108,8 @@
       "power": {
         "n": 1279,
         "n_clusters": 1160,
-        "ci_low": 0.37077378088472535,
-        "ci_high": 0.46619180305920943,
+        "ci_low": 0.851569886435674,
+        "ci_high": 0.9127379656507015,
         "ci_level": 0.95,
         "method": "cluster_bootstrap",
         "n_boot": 1000,
@@ -119,7 +119,7 @@
     {
       "control_id": "model-dr-ppv",
       "metric_key": "precision_score",
-      "actual_value": 0.5583596214511041,
+      "actual_value": 0.40736728060671723,
       "threshold": 0.3,
       "operator": "gt",
       "severity": "high",
@@ -135,8 +135,8 @@
       "power": {
         "n": 1279,
         "n_clusters": 1160,
-        "ci_low": 0.5030092592592593,
-        "ci_high": 0.6114953769559033,
+        "ci_low": 0.3744510835298788,
+        "ci_high": 0.43969639804383165,
         "ci_level": 0.95,
         "method": "cluster_bootstrap",
         "n_boot": 1000,
@@ -146,7 +146,7 @@
     {
       "control_id": "dr-performance-disparity",
       "metric_key": "demographic_parity_diff",
-      "actual_value": 0.0055429970105738136,
+      "actual_value": 0.0311525789341488,
       "threshold": 0.2,
       "operator": "lt",
       "severity": "high",
@@ -166,8 +166,8 @@
           "Female": 586,
           "Male": 693
         },
-        "ci_low": 0.0011468084884388645,
-        "ci_high": 0.054970641415306415,
+        "ci_low": 0.0018007975205028256,
+        "ci_high": 0.08237339487546419,
         "ci_level": 0.95,
         "method": "cluster_bootstrap",
         "n_boot": 1000,
@@ -177,7 +177,7 @@
     {
       "control_id": "dr-sensitivity-disparity-sex",
       "metric_key": "equal_opportunity_diff",
-      "actual_value": 0.0055429970105738136,
+      "actual_value": 0.0311525789341488,
       "threshold": 0.1,
       "operator": "lt",
       "severity": "high",
@@ -197,8 +197,8 @@
           "Female": 586,
           "Male": 693
         },
-        "ci_low": 0.0011468084884388645,
-        "ci_high": 0.054970641415306415,
+        "ci_low": 0.0018007975205028256,
+        "ci_high": 0.08237339487546419,
         "ci_level": 0.95,
         "method": "cluster_bootstrap",
         "n_boot": 1000,
@@ -208,7 +208,7 @@
     {
       "control_id": "dr-sensitivity-disparity-age",
       "metric_key": "equal_opportunity_diff",
-      "actual_value": 0.032301520332785605,
+      "actual_value": 0.02990333229707931,
       "threshold": 0.1,
       "operator": "lt",
       "severity": "high",
@@ -228,8 +228,8 @@
           "joven": 267,
           "mayor": 1012
         },
-        "ci_low": 0.0019770262983827462,
-        "ci_high": 0.10128467301781796,
+        "ci_low": 0.0015036704548313177,
+        "ci_high": 0.09212992210775035,
         "ci_level": 0.95,
         "method": "cluster_bootstrap",
         "n_boot": 1000,
@@ -237,7 +237,17 @@
       }
     }
   ],
-  "treatment_events": [],
+  "treatment_events": [
+    {
+      "control_id": "model-dr-sensitivity",
+      "risk_id": "risk.dr-underdiagnosis",
+      "kind": "Treatment",
+      "previous_value": 0.4164705882352941,
+      "current_value": 0.8847058823529412,
+      "anchored_commit": "21e36a797025922eacf838e04d69593eac5fca5b",
+      "previous_commit": "7b79ef7dd51478d613a243c517a505bcf7ae4517"
+    }
+  ],
   "risk_analysis": [
     {
       "risk_id": "risk.dr-underdiagnosis",
@@ -277,11 +287,11 @@
       "inherent_overall": "CRITICAL",
       "residual_overall": "HIGH",
       "requires_treatment": true,
-      "control_confirmed": false,
+      "control_confirmed": true,
       "cycle": {
-        "status": "open"
+        "status": "closed"
       },
-      "priority": 1
+      "priority": 2
     },
     {
       "risk_id": "risk.dr-performance-disparity",
@@ -316,7 +326,7 @@
       "cycle": {
         "status": "monitored"
       },
-      "priority": 2
+      "priority": 1
     },
     {
       "risk_id": "risk.dr-data-governance",
@@ -422,7 +432,7 @@
       "risk.governance-documentation-transparency"
     ]
   },
-  "pipeline_lock_digest": "sha256:f7643f9a121dff8d4e9a8d2543546278af70d3148d033cc2defd1e5050557dfd",
+  "pipeline_lock_digest": "sha256:f3e1ad5da74f38c1d5b69f0a02704c83d5eac288e16180ae02228b5c1eb7e97e",
   "sections": {
     "classification": "Valid",
     "data_governance": "Valid",
@@ -556,7 +566,7 @@
     },
     {
       "article": "15",
-      "status": "partial",
+      "status": "covered",
       "sources": [
         {
           "id": "eu/mdr@2017",
@@ -598,7 +608,7 @@
       "highest_authority": "international",
       "presumption": false,
       "control_count": 5,
-      "passed_count": 3
+      "passed_count": 5
     },
     {
       "article": "72",
@@ -700,7 +710,7 @@
   ],
   "bom": {
     "format_version": "cyclonedx-1.6",
-    "digest": "sha256:4b50853728ab17c1ac6f160981ac483704bd9c4f78558b432e820d1af688713f",
+    "digest": "sha256:fd8b1f60d323e577d6074556f97f8f2138eb7dd0841a01e1ef50386292b6b8b6",
     "components": [
       {
         "name": "PyYAML",

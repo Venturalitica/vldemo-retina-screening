@@ -2,7 +2,7 @@
   "schema_version": "venturalitica.ai/v1alpha1",
   "program_uid": "fb2cd398-7fc1-5135-b187-625cb0f1c2dd",
   "triple": {
-    "code": "7b79ef7dd51478d613a243c517a505bcf7ae4517",
+    "code": "21e36a797025922eacf838e04d69593eac5fca5b",
     "model": "resnet18-logreg:seed=42",
     "dataset": ""
   },
@@ -24,7 +24,7 @@
     },
     "measurement-model": {
       "status": "valid",
-      "input_hash": "sha256:74e0ff09e7c7896353f114b2463c988e942f2b1a77406b5ffe79b607f40aaca6",
+      "input_hash": "sha256:63afb8848b8a417a5e3cf952ae641442798092ad7c6fc76860f67456a9cbb8f2",
       "edge_type": "impl"
     },
     "risks": {
@@ -33,5 +33,5 @@
       "edge_type": "scope"
     }
   },
-  "signed_bundle_digest": "{\"payload\":\"eyJfdHlwZSI6Imh0dHBzOi8vaW4tdG90by5pby9TdGF0ZW1lbnQvdjEiLCJwcmVkaWNhdGUiOnsic3RhdGVtZW50X3ZlcnNpb24iOjEsInRvb2wiOiJ2ZW50aCJ9LCJwcmVkaWNhdGVUeXBlIjoiaHR0cHM6Ly92ZW50dXJhbGl0aWNhLmFpL2F0dGVzdGF0aW9uL3YxIiwic3ViamVjdCI6W3siZGlnZXN0Ijp7InNoYTI1NiI6ImI4MzJiMzcyOWI3NDc2ZmEwNzIzMzU5NjRmNTZlNTAyZGFhNTg3NzQ2ZjUwZWEyM2FjYjRkNmE0YTg2OTM2OGQifSwibmFtZSI6ImJ1bmRsZS5qc29uIn1dfQ==\",\"payloadType\":\"application/vnd.in-toto+json\",\"signatures\":[{\"keyid\":\"6a703fd98237348959a380b86d88b9eba6877e5eac3f86bbb6813f7d0a07a8fc\",\"sig\":\"TgZ/R+PBDPHNfMvLfdTxDXRYHqBdS1xyc3hij6riXn/Rf7VmQEGCYAIUJUbaq9Y/IwOiDYNcm66SiJkEmxo/KQ==\"}]}"
+  "signed_bundle_digest": "{\"payload\":\"eyJfdHlwZSI6Imh0dHBzOi8vaW4tdG90by5pby9TdGF0ZW1lbnQvdjEiLCJwcmVkaWNhdGUiOnsic3RhdGVtZW50X3ZlcnNpb24iOjEsInRvb2wiOiJ2ZW50aCJ9LCJwcmVkaWNhdGVUeXBlIjoiaHR0cHM6Ly92ZW50dXJhbGl0aWNhLmFpL2F0dGVzdGF0aW9uL3YxIiwic3ViamVjdCI6W3siZGlnZXN0Ijp7InNoYTI1NiI6ImQ4OTc0NGFiMjJiOTk5N2FjNTM3YjUzZDU0MDk4YzY0ZTA1NWMxZmY5OWJhMmI0ZTAyY2UxMGM2YzM1ODE4ZmQifSwibmFtZSI6ImJ1bmRsZS5qc29uIn1dfQ==\",\"payloadType\":\"application/vnd.in-toto+json\",\"signatures\":[{\"keyid\":\"6a703fd98237348959a380b86d88b9eba6877e5eac3f86bbb6813f7d0a07a8fc\",\"sig\":\"+U3SYzZpG8pKro8SSOG4B8u8r/R4MElrAiVGiIS7/VZiRMyJmt2KH6eslMi4nBnTgQPtSYPEytgJ/oHBM0fPhQ==\"}]}"
 }
