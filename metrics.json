@@ -1,0 +1,81 @@
+{
+  "model-dr-sensitivity": {
+    "value": 0.4164705882352941,
+    "power": {
+      "n": 1279,
+      "n_clusters": 1160,
+      "groups": {},
+      "ci_low": 0.37077378088472535,
+      "ci_high": 0.46619180305920943,
+      "ci_level": 0.95,
+      "method": "cluster_bootstrap",
+      "n_boot": 1000,
+      "seed": 42
+    }
+  },
+  "model-dr-ppv": {
+    "value": 0.5583596214511041,
+    "power": {
+      "n": 1279,
+      "n_clusters": 1160,
+      "groups": {},
+      "ci_low": 0.5030092592592593,
+      "ci_high": 0.6114953769559033,
+      "ci_level": 0.95,
+      "method": "cluster_bootstrap",
+      "n_boot": 1000,
+      "seed": 42
+    }
+  },
+  "dr-performance-disparity": {
+    "value": 0.0055429970105738136,
+    "power": {
+      "n": 1279,
+      "n_clusters": 1160,
+      "groups": {
+        "Male": 693,
+        "Female": 586
+      },
+      "ci_low": 0.0011468084884388645,
+      "ci_high": 0.054970641415306415,
+      "ci_level": 0.95,
+      "method": "cluster_bootstrap",
+      "n_boot": 1000,
+      "seed": 42
+    }
+  },
+  "dr-sensitivity-disparity-sex": {
+    "value": 0.0055429970105738136,
+    "power": {
+      "n": 1279,
+      "n_clusters": 1160,
+      "groups": {
+        "Male": 693,
+        "Female": 586
+      },
+      "ci_low": 0.0011468084884388645,
+      "ci_high": 0.054970641415306415,
+      "ci_level": 0.95,
+      "method": "cluster_bootstrap",
+      "n_boot": 1000,
+      "seed": 42
+    }
+  },
+  "dr-sensitivity-disparity-age": {
+    "value": 0.032301520332785605,
+    "power": {
+      "n": 1279,
+      "n_clusters": 1160,
+      "groups": {
+        "mayor": 1012,
+        "joven": 267
+      },
+      "ci_low": 0.0019770262983827462,
+      "ci_high": 0.10128467301781796,
+      "ci_level": 0.95,
+      "method": "cluster_bootstrap",
+      "n_boot": 1000,
+      "seed": 42
+    }
+  }
+}
