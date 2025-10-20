@@ -1,0 +1,58 @@
+{
+  "@context": {
+    "@vocab": "https://schema.org/",
+    "cr": "http://mlcommons.org/croissant/",
+    "rai": "http://mlcommons.org/croissant/RAI/",
+    "dataType": "http://mlcommons.org/croissant/dataType/"
+  },
+  "@type": "Dataset",
+  "conformsTo": "http://mlcommons.org/croissant/1.0",
+  "name": "odir5k-retina-screening",
+  "description": "Cohorte de evaluación de retinopatía diabética (DR) referible: Ocular Disease Intelligent Recognition (ODIR-5K), público en Kaggle (andrewmvd/ocular-disease-recognition-odir5k, CC BY 4.0). Los METADATOS por paciente (edad, sexo, etiquetas de diagnóstico, nombre de fichero de imagen) se versionan en este repo como `data/full_df.csv` (~1.5 MB). Las IMÁGENES de fondo de ojo (~2 GB) NO se versionan: el pipeline las lee de `$SEI_ODIR_CACHE/preprocessed_images/` en tiempo de construcción (re-ejecutores: descárguelas de la fuente Kaggle CC BY 4.0). El stage `evaluate` extrae features con resnet18 (GPU) y entrena un clasificador DR-referible, auditado con el venturalitica-sdk: sensibilidad DR (recall, GATE clínico) + paridad demográfica por sexo + power-stats con cluster-bootstrap por paciente.",
+  "license": "https://creativecommons.org/licenses/by/4.0/",
+  "url": "https://www.kaggle.com/datasets/andrewmvd/ocular-disease-recognition-odir5k",
+  "version": "1.0.0",
+  "citation": "ODIR-5K: Ocular Disease Intelligent Recognition. Kaggle, andrewmvd/ocular-disease-recognition-odir5k (CC BY 4.0).",
+  "rai:dataCollection": "Imágenes de fondo de ojo bilateral (3358 pacientes × 2 ojos = 6392 imágenes, resolución variable) + metadatos demográficos reales (edad, sexo, diagnóstico). Procedentes de hospitales en China; etiquetados por médicos oftalmólogos. El diagnóstico DR ('D') es la etiqueta objetivo del clasificador binario DR-referible / no referible.",
+  "rai:dataBiases": "Desequilibrio de clases: DR está presente en el 33,2% de las filas (2123/6392). Distribución de edad sesgada a 50-70 años. El sesgo de rendimiento por sexo se evalúa explícitamente mediante el control 'dr-performance-disparity'. Cohorte MONOPOBLACIONAL (hospitales de China, ODIR-5K): sin validación externa/temporal ni población UE. Posibles diferencias de calidad de imagen entre centros.",
+  "rai:sensitiveData": "Patient Sex (atributo protegido), Patient Age (atributo protegido / cuasi-identificador). La cohorte es pública y anonimizada; no contiene identificadores directos de paciente.",
+  "distribution": [
+    {
+      "@type": "cr:FileObject",
+      "@id": "full_df.csv",
+      "name": "full_df.csv",
+      "contentUrl": "data/full_df.csv",
+      "encodingFormat": "text/csv",
+      "description": "Metadatos por paciente VERSIONADOS en este repo: ID, Patient Age, Patient Sex, Left-Fundus, Right-Fundus, Left-Diagnostic Keywords, Right-Diagnostic Keywords, N, D, G, C, A, H, M, O (etiquetas multi-label), filename (imagen de referencia)."
+    },
+    {
+      "@type": "cr:FileObject",
+      "@id": "odir-images",
+      "name": "odir-images",
+      "contentUrl": "https://www.kaggle.com/datasets/andrewmvd/ocular-disease-recognition-odir5k",
+      "description": "Imágenes de fondo de ojo ODIR-5K (≈2 GB). NO versionadas en git. El pipeline las lee de `$SEI_ODIR_CACHE/preprocessed_images/` en build; los re-ejecutores las descargan de la fuente Kaggle (CC BY 4.0)."
+    }
+  ],
+  "recordSet": [
+    {
+      "@type": "cr:RecordSet",
+      "@id": "patients",
+      "name": "patients",
+      "description": "Una fila por imagen de fondo de ojo (6392 filas; 2 ojos por paciente, ID compartido para el cluster-bootstrap).",
+      "field": [
+        { "@type": "cr:Field", "@id": "patients/ID", "name": "ID", "dataType": "sc:Integer", "description": "Identificador del paciente (compartido entre ojos izquierdo/derecho)." },
+        { "@type": "cr:Field", "@id": "patients/Patient Age", "name": "Patient Age", "dataType": "sc:Integer", "rai:isProtected": true, "description": "Edad del paciente en años." },
+        { "@type": "cr:Field", "@id": "patients/Patient Sex", "name": "Patient Sex", "dataType": "sc:Text", "rai:isProtected": true, "description": "Sexo del paciente ('Male' / 'Female')." },
+        { "@type": "cr:Field", "@id": "patients/filename", "name": "filename", "dataType": "sc:Text", "description": "Nombre de fichero de la imagen de fondo de ojo en `$SEI_ODIR_CACHE/preprocessed_images/`." },
+        { "@type": "cr:Field", "@id": "patients/D", "name": "D", "dataType": "sc:Integer", "description": "Etiqueta de retinopatía diabética: 1 = DR-referible, 0 = no DR. Variable objetivo." },
+        { "@type": "cr:Field", "@id": "patients/N", "name": "N", "dataType": "sc:Integer", "description": "Normal (sin hallazgos)." },
+        { "@type": "cr:Field", "@id": "patients/G", "name": "G", "dataType": "sc:Integer", "description": "Glaucoma." },
+        { "@type": "cr:Field", "@id": "patients/C", "name": "C", "dataType": "sc:Integer", "description": "Catarata." },
+        { "@type": "cr:Field", "@id": "patients/A", "name": "A", "dataType": "sc:Integer", "description": "Degeneración macular asociada a la edad (AMD)." },
+        { "@type": "cr:Field", "@id": "patients/H", "name": "H", "dataType": "sc:Integer", "description": "Miopía alta." },
+        { "@type": "cr:Field", "@id": "patients/M", "name": "M", "dataType": "sc:Integer", "description": "Otras enfermedades de la mácula." },
+        { "@type": "cr:Field", "@id": "patients/O", "name": "O", "dataType": "sc:Integer", "description": "Otras enfermedades." }
+      ]
+    }
+  ]
+}

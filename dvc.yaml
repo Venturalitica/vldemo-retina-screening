@@ -1,0 +1,30 @@
+# Pipeline reproducible REAL del repo demo `vldemo-retina-screening` (cribado DR sobre ODIR-5K).
+# El motor lo reproduce vía el seam Reproducer (`dvc repro`) y ancla `dvc.lock` en la evidencia
+# firmada. STAGE ÚNICO `evaluate`: selecciona V1/V2 según `params.yaml:mitigate`, extrae features
+# resnet18 (GPU; cachea en /var/tmp/odir_features_v1.npz), entrena la cabeza LogReg, audita la
+# cohorte con el venturalitica-sdk (Art.15) y promueve el BOM a `.venturalitica/bom.json`.
+#
+# Las imágenes (~2 GB) NO son dep de DVC: se leen de `$SEI_ODIR_CACHE/preprocessed_images/`. El
+# dep versionado es `data/full_df.csv` (etiquetas/metadatos). El arco rojo→verde lo gobierna
+# `mitigate` (false→true), que demo-repos.ts versiona en git como TRATAMIENTO (ISO 23894 §6.5).
+stages:
+  evaluate:
+    cmd: .venv/bin/python evaluate.py
+    deps:
+      - evaluate.py
+      - compliance_eval.py
+      - train.py
+      - data/full_df.csv
+      - data/odir.croissant.json
+      - shared_data/policies/assessment_plan.oscal.yaml
+    params:
+      - seed
+      - mitigate
+    outs:
+      - model.pkl:
+          cache: true
+      - .venturalitica/bom.json:
+          cache: false
+    metrics:
+      - metrics.json:
+          cache: false

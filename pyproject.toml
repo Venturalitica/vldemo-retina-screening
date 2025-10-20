@@ -1,0 +1,23 @@
+[project]
+name = "vldemo-retina-screening"
+version = "0"
+requires-python = ">=3.11"
+dependencies = [
+  "dvc>=3",
+  "pyyaml",
+  "froga",
+  "venturalitica==0.6.11",
+  "torch==2.12.0",
+  "torchvision==0.27.0",
+  "scikit-learn>=1.4",
+  "pandas>=2.1",
+  "pyarrow",
+  "pillow>=10.0",
+  "numpy>=1.26",
+  "mlcroissant>=1.0",
+  "joblib",
+  "pyyaml>=6.0",
+]
+
+[tool.uv]
+find-links = ["https://sei-releases.s3.fr-par.scw.cloud/simple/froga/index.html"]

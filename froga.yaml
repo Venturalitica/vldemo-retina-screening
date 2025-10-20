@@ -1,0 +1,345 @@
+apiVersion: venturalitica.ai/v1alpha1
+kind: AISystem
+
+# ── Plantilla de gobernanza del repo demo público `vldemo-retina-screening`.
+# Deriva de crates/venth-cli/tests/resources/retinopathy/venth.yaml. El reproducer es REAL:
+# `compliance_eval.py` + `train.py` extraen features resnet18 (GPU) sobre las imágenes ODIR-5K
+# públicas y entrenan un clasificador DR-referible auditado con el venturalitica-sdk. El gate
+# clínico (sensibilidad DR, recall > 0.80) se MIDE sobre datos reales; el arco rojo→verde lo
+# gobierna `params.yaml:mitigate` (false→true = reentrenar con clase balanceada + umbral 0.30).
+# Las etiquetas/metadatos se versionan (`data/full_df.csv`); las imágenes (~2 GB) NO, se leen de
+# `$SEI_ODIR_CACHE` en build (re-ejecutores: ODIR-5K CC BY 4.0, ver NOTICE / odir.croissant.json).
+# OPSEC: cohorte ODIR-5K pública anonimizada; NUNCA EXIF ni pacientes reales. La entidad
+# ("RetinaCare Demo") es ficticia. SaMD MDR Clase IIa → EU AI Act Art.6(1) alto riesgo.
+
+# ── 1. Identidad y finalidad del sistema ─────────────────────────────────────
+system:
+  name: pilot-retina-screening
+  intended_purpose: "Cribado de retinopatia diabetica referible sobre fondo de ojo: clasifica ojos como DR-referible / no referible. SaMD de alto riesgo (MDR Clase IIa + EU AI Act Art.6(1))."
+  organization: RetinaCare Demo
+  version: "1.0.0"
+  decisions: [dr_referral, no_referral]
+  affected_persons: [pacientes, medicos_oftalmologos]
+  component_type: ai-model
+  # Mal uso razonablemente previsible (ISO 42001 6.1.4 / EU AI Act Art.9(2)(b)).
+  potential_misuses:
+    - id: mu.subgrupos-sin-verificar
+      description: "Desplegar el cribador en subpoblaciones no representadas en la cohorte (p.ej. etnias infrarrepresentadas) asumiendo equidad sin verificarla por grupo."
+      addressed_by: [risk.dr-performance-disparity, risk.dr-data-governance]
+    - id: mu.decision-automatica-sin-revisar
+      description: "Usar la prediccion del cribador como diagnostico definitivo sin que un oftalmologo confirme la derivacion."
+      addressed_by: [risk.insufficient-human-oversight]
+    - id: mu.fuera-de-proposito
+      description: "Reutilizar el score de retinopatia para otras patologias oculares (glaucoma, catarata) para las que el modelo no fue validado."
+      # M-24: ODIR-5K contiene etiquetas reales G/C/A/H/M/O (glaucoma/catarata/AMD/hipertension/
+      # miopia/otras) → el uso fuera de proposito es CONCRETO y afecta al paciente (no hipotetico).
+      # Se ATIENDE con una restriccion de proposito previsto en la IFU clinica (Art.13, RSK-4): el
+      # cribador SOLO esta validado para DR-referible; la mitigacion es un control de GOBERNANZA/
+      # despliegue (IFU + supervision HOTL Art.14), no un gate de este programa tecnico.
+      addressed_by: [risk.governance-documentation-transparency]
+
+# ── 2. Naturaleza de la tarea ────────────────────────────────────────────────
+task:
+  modality: image
+  type: classification
+
+# ── 3. Marco regulatorio ─────────────────────────────────────────────────────
+# Cribador de retinopatia diabetica referible sobre fondo de ojo — SaMD de alto riesgo:
+# MDR (Reg. UE 2017/745, Clase IIa) + EU AI Act Anexo III salud / Art.6(1). SIN DORA (el
+# operador no es una entidad financiera). ai_act_role: provider · ai_act_risk_class: high.
+context:
+  applicable_standards:
+    - eu/pren-18228@2026
+    - iso/23894@2023
+    - eu/ai-act@2024
+    - eu/mdr@2017
+    - eu/pren-18283@2026
+    - eu/pren-18282@2026
+
+# ── 4. Datos y modelo ────────────────────────────────────────────────────────
+# Dataset REAL ODIR-5K (Croissant-RAI en `data/odir.croissant.json`). `artifacts.model` declara
+# el descriptor del cribador (resnet18 congelado + cabeza LogReg); su `seed` ancla el determinismo
+# de la terna. El motor materializa la fase de medicion y `sei run` mide el gate clinico (recall)
+# con un `risk_id` → habilita `sei reconstruct`.
+artifacts:
+  model: { kind: resnet18-logreg, seed: 42 }
+dataset: { croissant: data/odir.croissant.json }
+
+# ── 5. Medicion y reproduccion ───────────────────────────────────────────────
+# Reproducer DVC REAL: el stage `evaluate` (dvc.yaml) corre `evaluate.py` → `compliance_eval.run`
+# (vl.monitor + vl.enforce Art.15) sobre la cohorte ODIR-5K, escribe `metrics.json` (clave = `id`
+# de la medida) y promueve el BOM a `.venturalitica/bom.json`. `eval.script` ancla el digest del
+# recomputo en `venth.lock`; bumpear `params.yaml:mitigate` (false→true) mueve la staleness del
+# modelo y `sei run` re-mide en V2 (arco V1 rojo → V2 verde).
+eval: { script: compliance_eval.py }
+pipeline: { tool: dvc, metrics: metrics.json, params: params.yaml }
+oscal: { assessment_plan: shared_data/policies/assessment_plan.oscal.yaml }
+
+# ── 5b. Evaluacion declarada por humano (F5) ─────────────────────────────────
+classification:
+  tier: high
+  basis:
+    - "EU AI Act Art.6(1) (componente de seguridad de producto sanitario — SaMD MDR Clase IIa)"
+    - "Reg. UE 2017/745 MDR Anexo I GSPR (gestion de riesgo SaMD)"
+  rationale: |
+    Cribado de retinopatia diabetica referible sobre fondo de ojo: SaMD MDR
+    Clase IIa (Reg. UE 2017/745) → EU AI Act Art.6(1) alto riesgo (componente
+    de seguridad de un producto sanitario regulado). Demo RetinaCare.
+
+# ── 6. Programa de riesgos (Art.9) ───────────────────────────────────────────
+# REGULACION DUAL: como SaMD, ademas del EU AI Act aplica la MDR; cada medida de modelo
+# mapea a su GSPR del Anexo I via `frameworks`.
+risk:
+  appetite: { individual: HIGH, society: MEDIUM, organization: HIGH }
+  criteria: { scale: "5x5" }
+  overall_residual_criterion: HIGH   # prEN 18228 cl.10: nivel maximo aceptable del residual GLOBAL
+  review_interval: P6M   # revision semestral (ISO 23894 §6.6)
+  risks:
+    # ── RSK-1 — Infradiagnostico de DR (Art.15 seguridad clinica) — el riesgo MEDIDO ───
+    # Un falso negativo en cribado DR = paciente que pierde la ventana terapeutica.
+    # Inherente: LIKELY × CRITICAL (individual) = CRITICAL. Excede el apetito → requiere tratamiento.
+    - id: risk.dr-underdiagnosis
+      title: "Infradiagnostico de retinopatia diabetica (falsos negativos)"
+      domain: safety
+      rationale: "Un falso negativo en cribado DR priva al paciente de tratamiento oportuno, con riesgo de perdida irreversible de vision (ventana terapeutica cerrada)."
+      impact: { individual: CRITICAL, society: HIGH, organization: HIGH }
+      likelihood: LIKELY
+      treat:
+        - method: REDUCE
+          action: "Garantizar una sensibilidad (recall) del cribador DR clinicamente aceptable (> 0.80) reentrenando con clase balanceada y umbral ajustado."
+          controls: [eu/ai-act@2024#art-15, eu/mdr@2017#gspr-17.1]
+          residual_likelihood: UNLIKELY   # tras tratamiento: UNLIKELY x CRITICAL = HIGH (dentro del apetito individual HIGH del residual global)
+          measures:
+            # CONTROL MEDIDO bloqueante: la bar clinica de SENSIBILIDAD (recall) del cribado DR,
+            # medida REAL sobre ODIR-5K (GPU resnet18 + LogReg, 6392 imagenes, cluster-bootstrap por
+            # paciente). V1 (mitigate=false) recall ROJO (< 0.80) → V2 (mitigate=true) recall VERDE
+            # (> 0.80), con el TRATAMIENTO real (class_weight balanced + threshold 0.30) que
+            # demo-repos.ts versiona bumpeando params.yaml:mitigate false→true.
+            # M-9 (LIMITES DECLARADOS, no ocultados): (1) el gate es SOLO sensibilidad; la
+            # ESPECIFICIDAD/TNR NO se mide (el SDK no tiene metrica de especificidad) — se DECLARA su
+            # ausencia, no se simula. (2) El PPV (over-referral) y la sensibilidad POR SUBGRUPO
+            # (sexo/edad) SI se miden, pero AUDIT-ONLY (ver abajo). (3) Evidencia de un SOLO fold 20%
+            # + seed=42, cohorte ODIR-5K monopoblacional (hospitales de China), sin validacion
+            # externa/temporal ni poblacion UE. El umbral 0.80 es una cota clinica de referencia.
+            - id: model-dr-sensitivity
+              metric: recall_score
+              constraint: "> 0.80"
+              severity: critical
+              enforcement: gate
+              lifecycle: [validation]
+              article: "15"
+              frameworks: [eu/mdr@2017#gspr-17.1]   # SaMD rendimiento/repetibilidad (Anexo I GSPR 17.1)
+              control_tier: protective
+              # M-23: una UNICA medicion de sensibilidad residual evidencia SOLO la evaluacion del
+              # riesgo, la verificacion de su control y el residual — no la identificacion, el
+              # analisis, la finalidad ni el testing (fases previas/declarativas). Citas recortadas
+              # (11→6) a lo que el gate genuinamente prueba; el residual SaMD cita su GSPR MDR.
+              standard_clauses:
+                - "eu/pren-18228@2026#7"      # Risk evaluation
+                - "eu/pren-18228@2026#9.2"    # Implementation & verification of risk control
+                - "eu/pren-18228@2026#9.3"    # Residual risk evaluation
+                - "iso/23894@2023#6.4.4"      # Risk evaluation
+                - "iso/23894@2023#6.5"        # Risk treatment
+                - "eu/mdr@2017#mdr.gspr-8-residual-risk"
+              inputs: { target: dr_referable, prediction: prediction, cluster: patient_id }
+            # M-9: PPV (valor predictivo positivo = precision) — contraparte de OVER-REFERRAL del
+            # gate de recall. AUDIT-ONLY (no gatea). V2 maximiza recall (umbral 0.30 + clase
+            # balanceada), asi que el PPV es MODESTO por diseno (mas derivaciones falsas a cambio de
+            # no perder casos): se DECLARA explicitamente. El umbral es una cota informativa de
+            # referencia, NO un gate ni un valor fijado a lo medido.
+            - id: model-dr-ppv
+              metric: precision_score
+              constraint: "> 0.30"
+              severity: high
+              enforcement: audit
+              lifecycle: [validation]
+              article: "15"
+              frameworks: [eu/mdr@2017#gspr-17.1]
+              inputs: { target: dr_referable, prediction: prediction, cluster: patient_id }
+            # Seguimiento post-comercializacion (Art.72): plan ACCIONABLE de deriva de la
+            # sensibilidad del cribador desplegado (disparador + cadencia ISO 8601 + cita) →
+            # cierra el gate de completitud Art.72 (PMS) del expediente de alto riesgo.
+            - id: postmarket-dr-performance-drift
+              metric: dr_sensitivity_drift
+              constraint: "< 0.05"
+              severity: high
+              enforcement: monitor
+              lifecycle: [monitoring]
+              article: "72"
+              standard_clauses: ["iso/42105@2026#monitoring"]
+              trigger: "caida sostenida de la sensibilidad DR > 0.05 respecto a la linea base de validacion clinica"
+              frequency: "P3M"
+              metric_threshold: "< 0.05"
+              art72_citation: "eu/ai-act@2024#art-72"
+
+    # ── RSK-2 — Disparidad de rendimiento por subgrupo (Art.15 equidad) ─────────
+    # El cribador puede detectar DR con distinta eficacia segun el sexo del paciente.
+    - id: risk.dr-performance-disparity
+      title: "Disparidad de rendimiento del cribador DR por subgrupo demografico"
+      domain: fairness
+      rationale: "El cribador puede detectar DR con distinta eficacia segun el sexo del paciente, comprometiendo la equidad del acceso al cribado."
+      impact: { individual: HIGH, society: HIGH }
+      likelihood: POSSIBLE
+      treat:
+        - method: REDUCE
+          action: "Acotar la paridad demografica de la derivacion por sexo del paciente."
+          controls: [eu/ai-act@2024#art-15]
+          residual_likelihood: UNLIKELY   # tras tratamiento: UNLIKELY x HIGH (individual) = MEDIUM <= apetito individual HIGH → coherente
+          measures:
+            # CONTROL MEDIDO advisory (audit): se MIDE pero NO gatea. Mide la paridad de TASA DE
+            # DERIVACION por sexo (demographic_parity_diff) — OJO: es paridad de RATE, NO de
+            # sensibilidad; tasas de derivacion iguales pueden coexistir con sensibilidad desigual
+            # por subgrupo. Por eso M-9 añade abajo la disparidad de SENSIBILIDAD (equal opportunity).
+            - id: dr-performance-disparity
+              metric: demographic_parity_diff
+              constraint: "< 0.20"
+              severity: high
+              enforcement: audit
+              lifecycle: [validation]
+              article: "15"
+              frameworks: [eu/mdr@2017#gspr-9]   # control de riesgo: rendimiento consistente en la poblacion
+              inputs: { target: dr_referable, prediction: prediction, dimension: patient_sex, cluster: patient_id }
+            # M-9: disparidad de SENSIBILIDAD (igualdad de oportunidad = brecha de TPR/recall entre
+            # subgrupos) — la metrica CORRECTA para "¿el cribador pierde casos en un subgrupo mas que
+            # en otro?". AUDIT-ONLY. Mide la brecha por SEXO; al declarar `dimension` el motor puebla
+            # `power.groups` (cierra el hallazgo M-9 `power.groups={}`). Umbral 0.10 = cota de equidad
+            # de referencia (no fijada a lo medido). Cita la clausula de medicion por subgrupo de
+            # prEN 18283 que ahora SI evidencia con datos reales por subgrupo.
+            - id: dr-sensitivity-disparity-sex
+              metric: equal_opportunity_diff
+              constraint: "< 0.10"
+              severity: high
+              enforcement: audit
+              lifecycle: [validation]
+              article: "15"
+              frameworks: [eu/mdr@2017#gspr-9]
+              standard_clauses: ["eu/pren-18283@2026#bias.subgroup_measurement"]
+              inputs: { target: dr_referable, prediction: prediction, dimension: patient_sex, cluster: patient_id }
+            # M-9: misma disparidad de sensibilidad por GRUPO DE EDAD (NC-06 pide ≥ sexo y edad).
+            # AUDIT-ONLY; `age_group` ya viaja en la cohorte de test (train.py materializa la columna).
+            - id: dr-sensitivity-disparity-age
+              metric: equal_opportunity_diff
+              constraint: "< 0.10"
+              severity: high
+              enforcement: audit
+              lifecycle: [validation]
+              article: "15"
+              frameworks: [eu/mdr@2017#gspr-9]
+              standard_clauses: ["eu/pren-18283@2026#bias.subgroup_measurement"]
+              inputs: { target: dr_referable, prediction: prediction, dimension: age_group, cluster: patient_id }
+
+    # ── RSK-3 — Gobernanza del dato (Art.10) ────────────────────────────────────
+    # Cohorte publica ODIR-5K: sesgo de representacion por sexo/edad y calidad de imagen.
+    - id: risk.dr-data-governance
+      title: "Gobernanza del dato de entrenamiento/validacion (Art.10)"
+      domain: data
+      rationale: "La cohorte publica ODIR-5K presenta sesgo de representacion por sexo/edad y calidad de imagen variable; una gobernanza insuficiente invalida las conclusiones de rendimiento."
+      impact: { individual: HIGH, society: MEDIUM }
+      likelihood: POSSIBLE
+      treat:
+        - method: REDUCE
+          action: "Verificar representacion equilibrada por sexo y edad y acotar la fraccion de imagenes de calidad degradada."
+          controls: [eu/ai-act@2024#art-10]
+          measures:
+            # Declaracion organizativa (no medida): gobernanza de datos atestiguada.
+            - id: oversight-data-governance
+              metric: oversight_data_governance_declared
+              constraint: "> 0"
+              severity: medium
+              enforcement: audit
+              evaluation: manual
+              lifecycle: [monitoring]
+              article: "10"
+              standard_clauses: ["iso/iec-5259-2@2024#balance"]
+
+    # ── RSK-4 — Gobernanza del riesgo, documentacion tecnica y transparencia clinica ──
+    # Art.9 (sistema de gestion del riesgo vivo) · Art.11 (documentacion tecnica Anexo IV) ·
+    # Art.13 (informacion clinica suficiente al oftalmologo usuario).
+    - id: risk.governance-documentation-transparency
+      title: "Gobernanza del riesgo (Art.9), documentacion tecnica Anexo IV (Art.11) y transparencia clinica (Art.13)"
+      domain: governance
+      rationale: "Sin sistema de gestion del riesgo vivo, documentacion tecnica Anexo IV y transparencia suficiente al oftalmologo, el proveedor no cumple las obligaciones Art.9/11/13 del AI Act."
+      impact: { individual: HIGH, organization: HIGH }
+      likelihood: POSSIBLE
+      treat:
+        - method: REDUCE
+          action: "Mantener el sistema de gestion del riesgo vivo (Art.9), la documentacion tecnica Anexo IV actualizada (Art.11) e informacion clinica suficiente al usuario final (Art.13)."
+          controls: [eu/ai-act@2024#art-9, eu/ai-act@2024#art-11, eu/ai-act@2024#art-13]
+          measures:
+            # Art.9 — sistema de gestion del riesgo vivo (iteracion continua sobre el ciclo).
+            - id: governance-risk-management
+              metric: risk_management_system_declared
+              constraint: "> 0"
+              severity: medium
+              enforcement: audit
+              evaluation: manual
+              lifecycle: [monitoring]
+              article: "9"
+              standard_clauses: ["iso/23894@2023#6.1", "eu/pren-18228@2026#9.2"]
+            # Art.11 — documentacion tecnica Anexo IV disponible y actualizada.
+            - id: governance-technical-documentation
+              metric: technical_documentation_annexiv_declared
+              constraint: "> 0"
+              severity: medium
+              enforcement: audit
+              evaluation: manual
+              lifecycle: [monitoring]
+              article: "11"
+              standard_clauses: ["iso/23894@2023#6.2", "eu/pren-18228@2026#11.1"]
+            # Art.13 — informacion clinica suficiente al oftalmologo usuario.
+            - id: governance-transparency-clinical
+              metric: transparency_clinical_info_declared
+              constraint: "> 0"
+              severity: medium
+              enforcement: audit
+              evaluation: manual
+              lifecycle: [monitoring]
+              article: "13"
+              standard_clauses: ["eu/pren-18229-1@2026#transparency", "iso/iec-12792@2024#information-content"]
+
+    # ── RSK-5 — Supervision humana insuficiente (Art.14, HITL declarado) ─────────
+    # El cribador automatico no debe sustituir al oftalmologo: un clinico debe confirmar
+    # toda derivacion antes de la accion clinica. Medidas declaradas (evaluation: manual).
+    - id: risk.insufficient-human-oversight
+      title: "Supervision humana insuficiente en el bucle de derivacion clinica"
+      domain: governance
+      rationale: "Sin modo de supervision HITL declarado, el cribador podria usarse como diagnostico definitivo sin revision del oftalmologo, vulnerando Art.14 AI Act y RGPD Art.22."
+      impact: { individual: HIGH, organization: HIGH }
+      likelihood: POSSIBLE
+      treat:
+        - method: REDUCE
+          action: "Declarar el modo de supervision (HITL: el oftalmologo confirma la derivacion), el rol asignado (oftalmologo revisor) y la formacion anti sesgo de automatizacion. El clinico puede anular la decision del cribador."
+          controls: [eu/ai-act@2024#art-14]
+          residual_likelihood: UNLIKELY   # tras tratamiento HITL: UNLIKELY x HIGH (individual) = MEDIUM <= apetito individual HIGH → coherente
+          measures:
+            # Modo de supervision: HITL — el oftalmologo confirma/revoca la derivacion DR.
+            - id: oversight-mode
+              metric: oversight_mode_declared
+              constraint: "> 0"
+              severity: medium
+              enforcement: audit
+              evaluation: manual
+              lifecycle: [monitoring]
+              article: "14"
+              standard_clauses: ["eu/pren-18229-1@2026#human-oversight", "iso/8200@2024#control-transfer"]
+            # Revision clinica: el oftalmologo confirma o revoca cada derivacion DR del cribador.
+            - id: oversight-clinician-review
+              metric: oversight_clinician_review_declared
+              constraint: "> 0"
+              severity: medium
+              enforcement: audit
+              evaluation: manual
+              lifecycle: [monitoring]
+              article: "14"
+              standard_clauses: ["eu/pren-18229-1@2026#human-oversight", "iso/42105@2026#intervention"]
+            # Sesgo de automatizacion: formacion para evitar la sobredependencia del clinico.
+            - id: oversight-automation-bias
+              metric: oversight_automation_bias_declared
+              constraint: "> 0"
+              severity: medium
+              enforcement: audit
+              evaluation: manual
+              lifecycle: [monitoring]
+              article: "14"
+              standard_clauses: ["eu/pren-18229-1@2026#human-oversight", "iso/42105@2026#guidance"]
+  applicability: {}
