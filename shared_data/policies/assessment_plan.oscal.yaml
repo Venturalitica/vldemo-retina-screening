@@ -1,0 +1,194 @@
+# GENERADO por `froga compile` desde pilot-retina-screening.yaml — NO editar a mano.
+# Fuente de verdad = el AssuranceProgram (capa Art.9). Las measures post-market
+# (lifecycle monitoring/production) se omiten del assessment-plan ex-ante.
+---
+component-definition:
+  uuid: f74f1bd0-e843-5be9-9f37-62934275d763
+  metadata:
+    title: Assessment plan (compilado de AssuranceProgram 'pilot-retina-screening')
+    version: 1.0.0
+    oscal-version: 1.2.2
+  components:
+  - uuid: a9dcac57-588d-55d9-b869-d55150855d01
+    type: software
+    title: pilot-retina-screening (assurance)
+    description: Controles ex-ante compilados desde el AssuranceProgram (Art.9 → contrato del gate).
+    control-implementations:
+    - uuid: 02dc5c3c-715c-5654-9607-ebd606cee7b0
+      source: '#vl-ai-assurance-profile-2026'
+      description: 'Generado por `froga compile`. NO editar a mano: la fuente es el AssuranceProgram.'
+      implemented-requirements:
+      - uuid: 1af41520-44f0-51d5-b9a5-3bce50f013a9
+        control-id: model-dr-sensitivity
+        description: Infradiagnostico de retinopatia diabetica (falsos negativos) — recall_score
+        props:
+        - name: metric_key
+          value: recall_score
+        - name: operator
+          value: gt
+        - name: threshold
+          value: '0.80'
+        - name: severity
+          value: critical
+        - name: enforcement_mode
+          value: block
+        - name: evaluation_method
+          value: automated
+        - name: lifecycle_phase
+          value: validation
+        - name: risk_id
+          value: risk.dr-underdiagnosis
+        - name: control_tier
+          value: protective
+        - name: article
+          value: '15'
+        - name: frameworks
+          value: eu/mdr@2017#gspr-17.1
+        - name: standard_clauses
+          value: eu/pren-18228@2026#7,eu/pren-18228@2026#9.2,eu/pren-18228@2026#9.3,iso/23894@2023#6.4.4,iso/23894@2023#6.5,eu/mdr@2017#mdr.gspr-8-residual-risk
+        - name: cluster
+          value: patient_id
+        - name: input.prediction
+          value: prediction
+        - name: input.target
+          value: dr_referable
+      - uuid: 811509c9-ff07-5de7-8c7a-02f393d090c2
+        control-id: model-dr-ppv
+        description: Infradiagnostico de retinopatia diabetica (falsos negativos) — precision_score
+        props:
+        - name: metric_key
+          value: precision_score
+        - name: operator
+          value: gt
+        - name: threshold
+          value: '0.30'
+        - name: severity
+          value: high
+        - name: enforcement_mode
+          value: warn
+        - name: evaluation_method
+          value: automated
+        - name: lifecycle_phase
+          value: validation
+        - name: risk_id
+          value: risk.dr-underdiagnosis
+        - name: control_tier
+          value: protective
+        - name: threshold_plausibility
+          value: suspect
+        - name: article
+          value: '15'
+        - name: frameworks
+          value: eu/mdr@2017#gspr-17.1
+        - name: cluster
+          value: patient_id
+        - name: input.prediction
+          value: prediction
+        - name: input.target
+          value: dr_referable
+      - uuid: a87db2b1-2b61-5392-8c3b-3dc5b3609a18
+        control-id: dr-performance-disparity
+        description: Disparidad de rendimiento del cribador DR por subgrupo demografico — demographic_parity_diff
+        props:
+        - name: metric_key
+          value: demographic_parity_diff
+        - name: operator
+          value: lt
+        - name: threshold
+          value: '0.20'
+        - name: severity
+          value: high
+        - name: enforcement_mode
+          value: warn
+        - name: evaluation_method
+          value: automated
+        - name: lifecycle_phase
+          value: validation
+        - name: risk_id
+          value: risk.dr-performance-disparity
+        - name: control_tier
+          value: protective
+        - name: article
+          value: '15'
+        - name: frameworks
+          value: eu/mdr@2017#gspr-9
+        - name: cluster
+          value: patient_id
+        - name: input.dimension
+          value: patient_sex
+        - name: input.prediction
+          value: prediction
+        - name: input.target
+          value: dr_referable
+      - uuid: 20bf793d-67ec-5913-987d-e35a94856905
+        control-id: dr-sensitivity-disparity-sex
+        description: Disparidad de rendimiento del cribador DR por subgrupo demografico — equal_opportunity_diff
+        props:
+        - name: metric_key
+          value: equal_opportunity_diff
+        - name: operator
+          value: lt
+        - name: threshold
+          value: '0.10'
+        - name: severity
+          value: high
+        - name: enforcement_mode
+          value: warn
+        - name: evaluation_method
+          value: automated
+        - name: lifecycle_phase
+          value: validation
+        - name: risk_id
+          value: risk.dr-performance-disparity
+        - name: control_tier
+          value: protective
+        - name: article
+          value: '15'
+        - name: frameworks
+          value: eu/mdr@2017#gspr-9
+        - name: standard_clauses
+          value: eu/pren-18283@2026#bias.subgroup_measurement
+        - name: cluster
+          value: patient_id
+        - name: input.dimension
+          value: patient_sex
+        - name: input.prediction
+          value: prediction
+        - name: input.target
+          value: dr_referable
+      - uuid: 8b12fdc1-e939-5e95-828e-2ea9b356f30b
+        control-id: dr-sensitivity-disparity-age
+        description: Disparidad de rendimiento del cribador DR por subgrupo demografico — equal_opportunity_diff
+        props:
+        - name: metric_key
+          value: equal_opportunity_diff
+        - name: operator
+          value: lt
+        - name: threshold
+          value: '0.10'
+        - name: severity
+          value: high
+        - name: enforcement_mode
+          value: warn
+        - name: evaluation_method
+          value: automated
+        - name: lifecycle_phase
+          value: validation
+        - name: risk_id
+          value: risk.dr-performance-disparity
+        - name: control_tier
+          value: protective
+        - name: article
+          value: '15'
+        - name: frameworks
+          value: eu/mdr@2017#gspr-9
+        - name: standard_clauses
+          value: eu/pren-18283@2026#bias.subgroup_measurement
+        - name: cluster
+          value: patient_id
+        - name: input.dimension
+          value: age_group
+        - name: input.prediction
+          value: prediction
+        - name: input.target
+          value: dr_referable

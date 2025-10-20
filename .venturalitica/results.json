@@ -1,0 +1,151 @@
+[
+  {
+    "control_id": "model-dr-sensitivity",
+    "description": "Infradiagnostico de retinopatia diabetica (falsos negativos) \u2014 recall_score",
+    "metric_key": "recall_score",
+    "threshold": 0.8,
+    "actual_value": 0.4164705882352941,
+    "operator": "gt",
+    "passed": false,
+    "severity": "critical",
+    "metadata": {
+      "severity": "critical",
+      "enforcement_mode": "block",
+      "evaluation_method": "automated",
+      "lifecycle_phase": "validation",
+      "risk_id": "risk.dr-underdiagnosis"
+    },
+    "power": {
+      "n": 1279,
+      "n_clusters": 1160,
+      "groups": {},
+      "ci_low": 0.37077378088472535,
+      "ci_high": 0.46619180305920943,
+      "ci_level": 0.95,
+      "method": "cluster_bootstrap",
+      "n_boot": 1000,
+      "seed": 42
+    }
+  },
+  {
+    "control_id": "model-dr-ppv",
+    "description": "Infradiagnostico de retinopatia diabetica (falsos negativos) \u2014 precision_score",
+    "metric_key": "precision_score",
+    "threshold": 0.3,
+    "actual_value": 0.5583596214511041,
+    "operator": "gt",
+    "passed": true,
+    "severity": "high",
+    "metadata": {
+      "severity": "high",
+      "enforcement_mode": "warn",
+      "evaluation_method": "automated",
+      "lifecycle_phase": "validation",
+      "risk_id": "risk.dr-underdiagnosis"
+    },
+    "power": {
+      "n": 1279,
+      "n_clusters": 1160,
+      "groups": {},
+      "ci_low": 0.5030092592592593,
+      "ci_high": 0.6114953769559033,
+      "ci_level": 0.95,
+      "method": "cluster_bootstrap",
+      "n_boot": 1000,
+      "seed": 42
+    }
+  },
+  {
+    "control_id": "dr-performance-disparity",
+    "description": "Disparidad de rendimiento del cribador DR por subgrupo demografico \u2014 demographic_parity_diff",
+    "metric_key": "demographic_parity_diff",
+    "threshold": 0.2,
+    "actual_value": 0.0055429970105738136,
+    "operator": "lt",
+    "passed": true,
+    "severity": "high",
+    "metadata": {
+      "severity": "high",
+      "enforcement_mode": "warn",
+      "evaluation_method": "automated",
+      "lifecycle_phase": "validation",
+      "risk_id": "risk.dr-performance-disparity"
+    },
+    "power": {
+      "n": 1279,
+      "n_clusters": 1160,
+      "groups": {
+        "Male": 693,
+        "Female": 586
+      },
+      "ci_low": 0.0011468084884388645,
+      "ci_high": 0.054970641415306415,
+      "ci_level": 0.95,
+      "method": "cluster_bootstrap",
+      "n_boot": 1000,
+      "seed": 42
+    }
+  },
+  {
+    "control_id": "dr-sensitivity-disparity-sex",
+    "description": "Disparidad de rendimiento del cribador DR por subgrupo demografico \u2014 equal_opportunity_diff",
+    "metric_key": "equal_opportunity_diff",
+    "threshold": 0.1,
+    "actual_value": 0.0055429970105738136,
+    "operator": "lt",
+    "passed": true,
+    "severity": "high",
+    "metadata": {
+      "severity": "high",
+      "enforcement_mode": "warn",
+      "evaluation_method": "automated",
+      "lifecycle_phase": "validation",
+      "risk_id": "risk.dr-performance-disparity"
+    },
+    "power": {
+      "n": 1279,
+      "n_clusters": 1160,
+      "groups": {
+        "Male": 693,
+        "Female": 586
+      },
+      "ci_low": 0.0011468084884388645,
+      "ci_high": 0.054970641415306415,
+      "ci_level": 0.95,
+      "method": "cluster_bootstrap",
+      "n_boot": 1000,
+      "seed": 42
+    }
+  },
+  {
+    "control_id": "dr-sensitivity-disparity-age",
+    "description": "Disparidad de rendimiento del cribador DR por subgrupo demografico \u2014 equal_opportunity_diff",
+    "metric_key": "equal_opportunity_diff",
+    "threshold": 0.1,
+    "actual_value": 0.032301520332785605,
+    "operator": "lt",
+    "passed": true,
+    "severity": "high",
+    "metadata": {
+      "severity": "high",
+      "enforcement_mode": "warn",
+      "evaluation_method": "automated",
+      "lifecycle_phase": "validation",
+      "risk_id": "risk.dr-performance-disparity"
+    },
+    "power": {
+      "n": 1279,
+      "n_clusters": 1160,
+      "groups": {
+        "mayor": 1012,
+        "joven": 267
+      },
+      "ci_low": 0.0019770262983827462,
+      "ci_high": 0.10128467301781796,
+      "ci_level": 0.95,
+      "method": "cluster_bootstrap",
+      "n_boot": 1000,
+      "seed": 42
+    }
+  }
+]
