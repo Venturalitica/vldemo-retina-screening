@@ -1,0 +1,117 @@
+{
+  "schema_version": 1,
+  "kind": "reconstruct",
+  "system": "pilot-retina-screening",
+  "payload": {
+    "system_name": "pilot-retina-screening",
+    "snapshots": [
+      {
+        "sha": "1c8f4b0f97e92234ce9653cd44ec8ccb95aa1dde",
+        "date": "2025-10-20T19:37:47+00:00",
+        "subject": "run: V1 evidencia (gate puede ser RED; seed=42)"
+      },
+      {
+        "sha": "328b88f51ce96b1026d1e98b56f5d3b129e1e29c",
+        "date": "2025-10-20T19:37:47+00:00",
+        "subject": "run: V2 evidencia (gate GREEN esperado; seed=42)"
+      }
+    ],
+    "risks": [
+      {
+        "risk_id": "risk.dr-performance-disparity",
+        "identified_sha": "338afe79f1cad739273a8777ab9c0d8d1a3f319a",
+        "identified_date": "2025-10-20T19:37:47Z",
+        "provenance": "declared",
+        "assessment": {
+          "risk_id": "risk.dr-performance-disparity",
+          "kind": "threat",
+          "provenance": "declared",
+          "likelihood": "POSSIBLE",
+          "residual_declared_likelihood": "UNLIKELY",
+          "dimensions": [
+            {
+              "dimension": "individual",
+              "impact": "HIGH",
+              "appetite": "HIGH",
+              "inherent_level": "HIGH",
+              "inherent_eval": "within",
+              "residual_level": "MEDIUM",
+              "residual_eval": "within"
+            },
+            {
+              "dimension": "society",
+              "impact": "HIGH",
+              "appetite": "MEDIUM",
+              "inherent_level": "HIGH",
+              "inherent_eval": "exceeds",
+              "residual_level": "MEDIUM",
+              "residual_eval": "within"
+            }
+          ],
+          "inherent_overall": "HIGH",
+          "residual_overall": "MEDIUM",
+          "requires_treatment": true,
+          "control_confirmed": true,
+          "cycle": {
+            "status": "monitored"
+          },
+          "priority": 1
+        }
+      },
+      {
+        "risk_id": "risk.dr-underdiagnosis",
+        "identified_sha": "338afe79f1cad739273a8777ab9c0d8d1a3f319a",
+        "identified_date": "2025-10-20T19:37:47Z",
+        "provenance": "declared",
+        "assessment": {
+          "risk_id": "risk.dr-underdiagnosis",
+          "kind": "threat",
+          "provenance": "declared",
+          "likelihood": "LIKELY",
+          "residual_declared_likelihood": "UNLIKELY",
+          "dimensions": [
+            {
+              "dimension": "individual",
+              "impact": "CRITICAL",
+              "appetite": "HIGH",
+              "inherent_level": "CRITICAL",
+              "inherent_eval": "exceeds",
+              "residual_level": "HIGH",
+              "residual_eval": "within"
+            },
+            {
+              "dimension": "society",
+              "impact": "HIGH",
+              "appetite": "MEDIUM",
+              "inherent_level": "HIGH",
+              "inherent_eval": "exceeds",
+              "residual_level": "MEDIUM",
+              "residual_eval": "within"
+            },
+            {
+              "dimension": "organization",
+              "impact": "HIGH",
+              "appetite": "HIGH",
+              "inherent_level": "HIGH",
+              "inherent_eval": "within",
+              "residual_level": "MEDIUM",
+              "residual_eval": "within"
+            }
+          ],
+          "inherent_overall": "CRITICAL",
+          "residual_overall": "HIGH",
+          "requires_treatment": true,
+          "control_confirmed": true,
+          "cycle": {
+            "status": "closed"
+          },
+          "priority": 2
+        }
+      }
+    ],
+    "approval": null,
+    "lifecycle": {
+      "state": "draft"
+    }
+  }
+}
